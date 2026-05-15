@@ -8,9 +8,18 @@
   padding: 0;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   background-color: #f7f9fc;
   color: #333333;
+  overflow-x: hidden;
+}
+
+body:has(.dark-mode) {
+  background-color: #121212;
 }
 
 /* ---------------------------------
@@ -290,6 +299,15 @@ body {
 }
 
 /* Orange Banner */
+/* Results Wrapper */
+.results-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  background: #f5f5f5;
+}
+
 .banner-saber {
   background-color: #f78c1e;
   position: relative;
@@ -505,6 +523,7 @@ body {
   height: 100%;
   background: #009ca6;
   border-radius: 4px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .perc-segment-lines {
   position: absolute;
@@ -577,6 +596,116 @@ body {
   font-weight: 600;
 }
 
+/* Dark mode styles */
+.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+.dark-mode .top-nav {
+  background-color: #1a1a1a;
+  border-bottom-color: #333;
+}
+.dark-mode .report-container {
+  background-color: transparent;
+}
+.dark-mode .floating-tools {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
+.dark-mode .floating-tools button {
+  border-bottom-color: #333;
+}
+.dark-mode .subject-detail-box {
+  background-color: #1e1e1e;
+  border-color: #333;
+  color: #e0e0e0;
+}
+.dark-mode .report-section {
+  background-color: transparent;
+}
+.dark-mode .section-header {
+  border-bottom-color: #333;
+}
+.dark-mode .section-header h3,
+.dark-mode h3, 
+.dark-mode .global-title, 
+.dark-mode .global-title span,
+.dark-mode .score-num, 
+.dark-mode .perc-num, 
+.dark-mode .prueba-score,
+.dark-mode .prueba-name,
+.dark-mode .percentile-title span,
+.dark-mode .subject-detail-header h4,
+.dark-mode .formula-row.total,
+.dark-mode .formula-title {
+  color: #fff;
+}
+.dark-mode .perc-label, 
+.dark-mode .perc-markers, 
+.dark-mode .perc-markers span,
+.dark-mode .perc-right p, 
+.dark-mode .prueba-max,
+.dark-mode .subject-detail-max,
+.dark-mode .subject-perc-result p,
+.dark-mode .nivel-desc,
+.dark-mode .modal-note {
+  color: #aaa;
+}
+.dark-mode .btn-print,
+.dark-mode .floating-tools button,
+.dark-mode .subject-detail-close {
+  color: #e0e0e0;
+  border-color: #333;
+}
+.dark-mode .btn-calc {
+  background: #2c2c2c;
+  border-color: #444;
+  color: #e0e0e0;
+}
+.dark-mode .perc-bar {
+  background: #333;
+}
+.dark-mode .perc-segment-lines div {
+  border-right-color: #1e1e1e;
+}
+.dark-mode .bottom-placeholder {
+  background: #1e1e1e;
+  border-color: #444;
+}
+.dark-mode .bottom-placeholder p {
+  color: #aaa;
+}
+.dark-mode .bottom-link {
+  color: #009ca6;
+}
+.dark-mode .prueba-item:hover {
+  background: #2a2a2a;
+}
+.dark-mode .prueba-selected {
+  background: #2c3e50 !important;
+  border-color: #009ca6;
+}
+.dark-mode .subject-detail-header {
+  border-bottom-color: #333;
+}
+.dark-mode .subject-nivel-section {
+  background: #2a2a2a;
+}
+.dark-mode .profile-menu {
+  color: #e0e0e0;
+}
+.dark-mode .btn-logout-dropdown {
+  color: #e0e0e0;
+  border-color: #444;
+}
+.dark-mode .global-left {
+  border-right-color: #333;
+}
+.dark-mode .score-max {
+  color: #888;
+}
+
 /* Bottom Placeholder */
 .bottom-placeholder {
   margin-top: 50px;
@@ -600,6 +729,280 @@ body {
   font-weight: 600;
 }
 
+/* Prueba item clickeable */
+.prueba-item {
+  transition: all 0.25s ease;
+  border-radius: 10px;
+  padding: 12px 8px;
+}
+.prueba-item:hover {
+  background: #f0f7f8;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,156,166,0.12);
+}
+.prueba-selected {
+  background: #e6f7f8 !important;
+  border: 2px solid #009ca6;
+  box-shadow: 0 4px 16px rgba(0,156,166,0.18);
+  transform: translateY(-3px);
+}
+
+/* Subject Detail Box */
+.subject-detail-box {
+  margin-top: 50px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.subject-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+.subject-detail-icon {
+  width: 48px;
+  height: 48px;
+}
+.subject-detail-header h4 {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 0;
+}
+.subject-detail-score {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #009ca6;
+}
+.subject-detail-max {
+  font-size: 1rem;
+  color: #999;
+  font-weight: 500;
+}
+.subject-detail-close {
+  margin-left: auto;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.subject-detail-close:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+.subject-detail-body {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+.subject-perc-section {
+  flex: 2;
+}
+.subject-perc-result {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+}
+.subject-perc-result .perc-num {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #444;
+}
+.subject-perc-result p {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.4;
+}
+.subject-nivel-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 10px;
+}
+.nivel-badge {
+  color: white;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.nivel-desc {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Modal ¿Cómo se calcula? - Glassmorphism */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-calc {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 20px;
+  padding: 35px;
+  max-width: 520px;
+  width: 90%;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  animation: modalSlide 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.dark-mode .modal-overlay {
+  background: rgba(0,0,0,0.25);
+}
+.dark-mode .modal-calc {
+  background: rgba(30,30,30,0.88);
+  border-color: rgba(255,255,255,0.1);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  color: #e0e0e0;
+}
+.dark-mode .modal-calc h3 {
+  color: #fff;
+}
+.dark-mode .modal-desc {
+  color: #aaa;
+}
+.dark-mode .modal-formula {
+  background: rgba(255,255,255,0.05);
+}
+.dark-mode .formula-row {
+  color: #bbb;
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+.dark-mode .modal-result {
+  background: rgba(27,94,32,0.4);
+  color: #fff;
+}
+.dark-mode .modal-close {
+  color: #aaa;
+  border-color: #444;
+}
+@keyframes modalSlide {
+  from { opacity: 0; transform: scale(0.92) translateY(15px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-close {
+  position: absolute;
+  top: 15px; right: 15px;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.modal-close:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+.modal-calc h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 12px;
+  padding-right: 30px;
+}
+.modal-desc {
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.modal-formula {
+  background: #f8f9fc;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.formula-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 15px;
+}
+.formula-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.9rem;
+  color: #555;
+  border-bottom: 1px solid #eee;
+}
+.formula-row.ing {
+  color: #f78c1e;
+  font-weight: 500;
+}
+.formula-divider {
+  height: 2px;
+  background: #009ca6;
+  margin: 10px 0;
+}
+.formula-row.total {
+  border-bottom: none;
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+.modal-result {
+  font-size: 1.05rem;
+  color: #333;
+  text-align: center;
+  padding: 10px;
+  background: #e8f5e9;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.modal-note {
+  font-size: 0.8rem;
+  color: #999;
+  text-align: center;
+  font-style: italic;
+}
+
 /* Toasts */
 .toast {
   position: fixed;
@@ -620,6 +1023,37 @@ body {
 
 /* Responsive adjustments */
 @media(max-width: 900px) {
+  .banner-saber {
+    padding: 15px 20px;
+  }
+  .banner-text p {
+    display: none;
+  }
+  .banner-text h2 {
+    font-size: 1.3rem;
+    margin-bottom: 0;
+  }
+  .banner-content {
+    gap: 10px;
+  }
+  .banner-logo {
+    gap: 8px;
+  }
+  .number-11 {
+    font-size: 3rem;
+  }
+  .logo-text-stack .big-text {
+    font-size: 1rem;
+  }
+  .logo-text-stack .small-text {
+    font-size: 0.6rem;
+  }
+  
+  .report-container {
+    margin: 15px auto;
+    padding: 0 12px;
+  }
+
   .global-flex {
     flex-direction: column;
   }
@@ -627,11 +1061,15 @@ body {
     border-right: none;
     border-bottom: 1px solid #ddd;
     padding-right: 0;
-    padding-bottom: 30px;
+    padding-bottom: 20px;
+  }
+  .percentile-data {
+    flex-direction: column;
+    gap: 15px;
   }
   .pruebas-grid {
     flex-direction: column;
-    gap: 30px;
+    gap: 15px;
   }
   .prueba-item {
     width: 100%;
@@ -641,5 +1079,18 @@ body {
   .prueba-name {
     min-height: auto;
     margin-bottom: 0;
+  }
+  .floating-tools {
+    right: 8px;
+  }
+  .subject-detail-box {
+    padding: 20px;
+  }
+  .subject-detail-body {
+    flex-direction: column;
+  }
+  .subject-nivel-section {
+    flex-direction: row;
+    width: 100%;
   }
 }

@@ -62,6 +62,36 @@ const IcfesLogoSVG = ({ size = 50 }) => (
 );
 
 
+// Cálculo del percentil usando distribución normal (CDF)
+function calcPercentil(puntaje, media = 250, desviacion = 50) {
+  const z = (puntaje - media) / desviacion;
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989422804014327;
+  const p = d * Math.exp(-z * z / 2);
+  const poly = t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  const cdf = z >= 0 ? 1 - p * poly : p * poly;
+  return Math.min(99, Math.max(1, Math.round(cdf * 100)));
+}
+
+// Percentil por materia (puntaje sobre 100, media ≈ 50, std ≈ 10)
+function calcPercentilMateria(puntaje) {
+  return calcPercentil(puntaje, 50, 10);
+}
+
+// Nombres completos de las materias
+function getNombreMateria(code) {
+  const nombres = { LEC: 'Lectura Crítica', MAT: 'Matemáticas', SOC: 'Sociales y Ciudadanas', CIE: 'Ciencias Naturales', ING: 'Inglés' };
+  return nombres[code] || code;
+}
+
+// Nivel de desempeño según puntaje por materia
+function getNivelDesempeno(puntaje) {
+  if (puntaje >= 76) return { nivel: 'Nivel 4', desc: 'Desempeño superior', color: '#2e7d32' };
+  if (puntaje >= 61) return { nivel: 'Nivel 3', desc: 'Desempeño alto', color: '#1b5e20' };
+  if (puntaje >= 41) return { nivel: 'Nivel 2', desc: 'Desempeño medio', color: '#f57f17' };
+  return { nivel: 'Nivel 1', desc: 'Desempeño bajo', color: '#c62828' };
+}
+
 function App() {
   const [numDocument, setNumDocument] = useState("")
   const [born, setBorn] = useState("")
@@ -69,8 +99,16 @@ function App() {
   const [young, setYoung] = useState(true)
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState(null)
+  const [selectedMateria, setSelectedMateria] = useState(null)
+  const [showCalcModal, setShowCalcModal] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
+  const [zoomLevel, setZoomLevel] = useState(100)
   
   const printRef = useRef();
+
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 10, 150));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 10, 70));
+  const toggleDarkMode = () => setDarkMode(prev => !prev);
 
   useEffect(() => {
     const cachedData = localStorage.getItem("icfesCachedResult");
@@ -149,14 +187,42 @@ function App() {
   const handleExportPDF = () => {
     const element = printRef.current;
     if (!element) return;
+
+    // Quitar zoom temporalmente
+    const originalTransform = element.style.transform;
+    element.style.transform = 'none';
+    
     const opt = {
       margin: 0.2,
-      filename: `Resultados_Saber11_${numDocument}.pdf`,
+      filename: 'Resultados_Saber11.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
-    html2pdf().set(opt).from(element).save();
+
+    html2pdf().set(opt).from(element).output('blob').then((blob) => {
+      // Truco para forzar el nombre en Chrome: Convertir el Blob anónimo en un objeto File real
+      const file = new File([blob], 'Resultados_Saber11.pdf', { type: 'application/pdf' });
+      const url = URL.createObjectURL(file);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Resultados_Saber11.pdf';
+      
+      document.body.appendChild(link);
+      link.click();
+      
+      // Limpieza
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        element.style.transform = originalTransform;
+      }, 100);
+      
+    }).catch((err) => {
+      console.error(err);
+      element.style.transform = originalTransform;
+    });
   }
 
   const getSubjectIcon = (code) => {
@@ -174,7 +240,7 @@ function App() {
     const primerNombre = mainData.estudiante.split(' ')[0].toUpperCase();
 
     return (
-      <div className="results-wrapper">
+      <div className={`results-wrapper ${darkMode ? 'dark-mode' : ''}`}>
         <SEO title="Resultados | ICFES" description="Tus resultados del ICFES" url="https://icfes-consultas.vercel.app/" />
         
         {/* Top Navbar */}
@@ -209,12 +275,12 @@ function App() {
 
         {/* Floating Toolbar */}
         <div className="floating-tools">
-          <button><IcfesIcons.Contrast /></button>
-          <button><IcfesIcons.ZoomIn /></button>
-          <button><IcfesIcons.ZoomOut /></button>
+          <button onClick={toggleDarkMode} title="Modo oscuro"><IcfesIcons.Contrast /></button>
+          <button onClick={handleZoomIn} title="Aumentar tamaño"><IcfesIcons.ZoomIn /></button>
+          <button onClick={handleZoomOut} title="Disminuir tamaño"><IcfesIcons.ZoomOut /></button>
         </div>
 
-        <div className="report-container" ref={printRef}>
+        <div className="report-container" ref={printRef} style={{transform: `scale(${zoomLevel/100})`, transformOrigin: 'top center'}}>
           {mainData.examenes.map((examen) => (
             <div key={examen.ACREGISTRO} className="report-section">
               <div className="section-header">
@@ -224,6 +290,9 @@ function App() {
                 </button>
               </div>
               
+              {(() => {
+                const percentil = calcPercentil(examen.puntaje);
+                return (
               <div className="global-flex">
                  <div className="global-left">
                     <div className="global-title">
@@ -233,7 +302,7 @@ function App() {
                     <div className="score-big">
                        <span className="score-num">{examen.puntaje}</span><span className="score-max">/500</span>
                     </div>
-                    <button className="btn-calc">¿Cómo se calcula?</button>
+                    <button className="btn-calc" onClick={() => setShowCalcModal(true)}>¿Cómo se calcula?</button>
                  </div>
                  
                  <div className="global-right">
@@ -246,7 +315,7 @@ function App() {
                           <span className="perc-label">Estudiantes a nivel nacional</span>
                           <div className="perc-bar-container">
                              <div className="perc-bar">
-                                <div className="perc-fill" style={{width: '83%'}}></div>
+                                <div className="perc-fill" style={{width: `${percentil}%`}}></div>
                                 <div className="perc-segment-lines">
                                    <div></div><div></div><div></div><div></div>
                                 </div>
@@ -257,14 +326,16 @@ function App() {
                           </div>
                        </div>
                        <div className="perc-middle">
-                          <span className="perc-num">83</span>
+                          <span className="perc-num">{percentil}</span>
                        </div>
                        <div className="perc-right">
-                          <p>Tu puntaje superó al 83 % de los estudiantes a<br/>nivel nacional.</p>
+                          <p>Tu puntaje superó al {percentil} % de los estudiantes a<br/>nivel nacional.</p>
                        </div>
                     </div>
                  </div>
               </div>
+                );
+              })()}
 
               <div className="section-header pt-pruebas">
                 <h3>Puntaje por pruebas</h3>
@@ -272,7 +343,7 @@ function App() {
               
               <div className="pruebas-grid">
                 {examen.puntajeMaterias.map((materia) => (
-                  <div key={materia.code} className="prueba-item">
+                  <div key={materia.code} className={`prueba-item ${selectedMateria?.code === materia.code ? 'prueba-selected' : ''}`} onClick={() => setSelectedMateria(materia)} style={{cursor:'pointer'}}>
                      <span className="prueba-name">{materia.nombrePrueba}</span>
                      <div className="prueba-score-row">
                        <div className="prueba-icon">
@@ -285,14 +356,96 @@ function App() {
                 ))}
               </div>
 
+              {selectedMateria ? (() => {
+                const percMateria = calcPercentilMateria(selectedMateria.puntaje);
+                const nivel = getNivelDesempeno(selectedMateria.puntaje);
+                return (
+                <div className="subject-detail-box">
+                  <div className="subject-detail-header">
+                    <div className="subject-detail-icon">
+                      {getSubjectIcon(selectedMateria.code)}
+                    </div>
+                    <div>
+                      <h4>{getNombreMateria(selectedMateria.code)}</h4>
+                      <span className="subject-detail-score">{selectedMateria.puntaje}<span className="subject-detail-max">/100</span></span>
+                    </div>
+                    <button className="subject-detail-close" onClick={() => setSelectedMateria(null)}>✕</button>
+                  </div>
+
+                  <div className="subject-detail-body">
+                    <div className="subject-perc-section">
+                      <span className="perc-label">Percentil nacional en {getNombreMateria(selectedMateria.code)}</span>
+                      <div className="perc-bar-container">
+                        <div className="perc-bar">
+                          <div className="perc-fill" style={{width: `${percMateria}%`}}></div>
+                          <div className="perc-segment-lines">
+                            <div></div><div></div><div></div><div></div>
+                          </div>
+                        </div>
+                        <div className="perc-markers">
+                          <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
+                        </div>
+                      </div>
+                      <div className="subject-perc-result">
+                        <span className="perc-num">{percMateria}</span>
+                        <p>Tu puntaje en {getNombreMateria(selectedMateria.code)} superó al <strong>{percMateria}%</strong> de los estudiantes a nivel nacional.</p>
+                      </div>
+                    </div>
+
+                    <div className="subject-nivel-section">
+                      <span className="nivel-badge" style={{background: nivel.color}}>{nivel.nivel}</span>
+                      <span className="nivel-desc">{nivel.desc}</span>
+                    </div>
+                  </div>
+                </div>
+                );
+              })() : (
               <div className="bottom-placeholder">
-                 <p>En esta zona apareceran tus percentiles, nivel de desempeño<br/>y un analisis de tus resultados en esta el área.</p>
                  <IcfesIcons.Bulb />
+                 <p>Haz clic en una materia para ver tus percentiles, nivel de desempeño<br/>y un análisis de tus resultados en esa área.</p>
                  <span className="bottom-link">Conoce a detalle tus resultados</span>
               </div>
+              )}
+
             </div>
           ))}
         </div>
+
+        {/* Modal ¿Cómo se calcula? - fuera del report-container para que position:fixed funcione */}
+        {showCalcModal && (() => {
+          const examen = mainData.examenes[0];
+          const materias = examen.puntajeMaterias;
+          const getLEC = materias.find(m => m.code === 'LEC')?.puntaje || 0;
+          const getMAT = materias.find(m => m.code === 'MAT')?.puntaje || 0;
+          const getSOC = materias.find(m => m.code === 'SOC')?.puntaje || 0;
+          const getCIE = materias.find(m => m.code === 'CIE')?.puntaje || 0;
+          const getING = materias.find(m => m.code === 'ING')?.puntaje || 0;
+          const suma = (getLEC*3) + (getMAT*3) + (getSOC*3) + (getCIE*3) + (getING*1);
+          const resultado = Math.round((suma / 13) * 5);
+          return (
+          <div className="modal-overlay" onClick={() => setShowCalcModal(false)}>
+            <div className="modal-calc" onClick={e => e.stopPropagation()}>
+              <button className="modal-close" onClick={() => setShowCalcModal(false)}>✕</button>
+              <h3>¿Cómo se calcula tu puntaje global?</h3>
+              <p className="modal-desc">Todas las materias se multiplican por <strong>3</strong>, excepto <strong>Inglés</strong> que se multiplica por <strong>1</strong>. Luego se suman, se dividen entre <strong>13</strong> y se multiplican por <strong>5</strong>.</p>
+              
+              <div className="modal-formula">
+                <div className="formula-title">Tu cálculo con tus puntajes reales:</div>
+                <div className="formula-row"><span>Lectura Crítica</span><span>{getLEC} × 3 = <strong>{getLEC*3}</strong></span></div>
+                <div className="formula-row"><span>Matemáticas</span><span>{getMAT} × 3 = <strong>{getMAT*3}</strong></span></div>
+                <div className="formula-row"><span>Sociales y Ciudadanas</span><span>{getSOC} × 3 = <strong>{getSOC*3}</strong></span></div>
+                <div className="formula-row"><span>Ciencias Naturales</span><span>{getCIE} × 3 = <strong>{getCIE*3}</strong></span></div>
+                <div className="formula-row ing"><span>Inglés</span><span>{getING} × 1 = <strong>{getING}</strong></span></div>
+                <div className="formula-divider"></div>
+                <div className="formula-row total"><span>Suma total</span><span><strong>{suma}</strong></span></div>
+                <div className="formula-row total"><span>{suma} ÷ 13 × 5</span><span>= <strong>{resultado}</strong></span></div>
+              </div>
+              <p className="modal-result">Tu puntaje global calculado: <strong>{resultado}</strong> {Math.abs(resultado - examen.puntaje) <= 5 ? '' : `(ICFES reporta: ${examen.puntaje})`}</p>
+              <p className="modal-note">* Puede haber una pequeña diferencia por redondeo del ICFES.</p>
+            </div>
+          </div>
+          );
+        })()}
       </div>
     );
   }

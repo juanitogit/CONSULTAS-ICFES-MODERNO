@@ -346,7 +346,7 @@ function App() {
           </div>
         </div>
         <div className="gov-footer-bottom">
-          <p>© 2026 ICFES Consultas. Desarrollado con ❤️ para estudiantes colombianos.</p>
+          <p>© {new Date().getFullYear()} ICFES Consultas. Desarrollado con ❤️ para estudiantes colombianos.</p>
           <p className="disclaimer">Este sitio no está afiliado con el ICFES oficial.</p>
         </div>
       </footer>

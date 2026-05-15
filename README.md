@@ -1,38 +1,27 @@
 # 🎓 ICFES WEB CONSULTA
 
-Una aplicación moderna y elegante para consultar resultados de exámenes ICFES en Colombia.
+Una aplicación moderna, limpia y altamente profesional para consultar resultados de exámenes ICFES Saber 11 en Colombia.
 
 ## ✨ Características del Diseño
 
-### 🎨 Diseño Visual Mejorado
+### 🎨 Estética Oficial e Institucional
 
-- **Gradientes modernos**: Fondo degradado con tonos morados y azules
-- **Glassmorphism**: Efectos de vidrio esmerilado en tarjetas y formularios
-- **Animaciones fluidas**: Transiciones suaves y efectos hover atractivos
-- **Tema oscuro profesional**: Diseño optimizado para reducir fatiga visual
+- **Diseño Corporativo**: Interfaz inspirada en el portal oficial del ICFES, transmitiendo confianza y seriedad.
+- **Paleta de Colores**: Uso de los colores institucionales exactos (Cian `#009ca6` y Granate `#a6192e`).
+- **Ondas Vectoriales**: Implementación nativa de las ondas del diseño oficial mediante `SVG` para una resolución perfecta sin imágenes pesadas.
+- **Iconografía Personalizada**: Íconos de asignaturas y herramientas vectorizados a mano respetando la estética en colores pastel.
 
-### 🎭 Componentes Interactivos
+### 🎭 Componentes Funcionales
 
-- **Formulario elegante**: Con validación visual y estados de carga
-- **Tarjetas de resultados**: Diseño tipo acordeón con animaciones
-- **Navegación moderna**: Sistema de tabs con efectos visuales
-- **Feedback visual**: Mensajes claros de éxito/error
+- **Formulario de Ingreso Clean**: Diseño "split-screen" con validación visual.
+- **Reporte Detallado**: Gráficos de barras nativos y visualización de puntaje global y percentiles.
+- **Exportación a PDF**: Generación en un clic del reporte de resultados exacto para imprimir o guardar, mediante `html2pdf.js`.
 
-### 📱 Responsive Design
+### 🎯 Experiencia de Usuario & Productividad
 
-- Totalmente adaptable a dispositivos móviles
-- Grid system flexible para las tarjetas de materias
-- Optimizado para tablets y desktop
-
-### 🎯 Experiencia de Usuario
-
-- **Iconos descriptivos**: Emojis para mejor comprensión
-- **Colores por materia**: Cada asignatura tiene su paleta única
-  - 🔴 Inglés (Rojo)
-  - 🔵 Matemáticas (Azul)
-  - 🟠 Sociales (Naranja)
-  - 🟢 Ciencias (Verde)
-  - 🟣 Lectura Crítica (Púrpura)
+- **Caché Inteligente**: Tus resultados se guardan localmente para que no tengas que volver a llenar el formulario si refrescas la página.
+- **Visualización Rápida**: Interfaz optimizada sin tiempos de carga innecesarios.
+- **Diseño Responsivo**: Perfectamente adaptable a teléfonos móviles, manteniendo la legibilidad de puntajes.
 
 ## 🚀 Inicio Rápido
 
@@ -51,122 +40,42 @@ npm run build
 
 - **React 18** - Framework UI
 - **Vite** - Build tool y optimización
-- **React Router** - Navegación SPA
-- **Axios** - Peticiones HTTP
-- **React Icons** - Iconografía profesional
-- **CSS Moderno** - Animaciones y efectos avanzados
+- **Axios** - Peticiones HTTP al servidor de consultas
+- **html2pdf.js** - Exportación de resultados
+- **CSS Moderno** - Vectores SVG, flexbox y diseño responsivo puro
 
 ## 🚀 Optimización SEO
 
-### Meta Tags Completos
-
 - ✅ Title, Description, Keywords optimizados
-- ✅ Open Graph para redes sociales
-- ✅ Twitter Cards configuradas
-- ✅ Schema.org JSON-LD
-- ✅ Canonical URLs
-
-### Archivos de Configuración
-
-- ✅ `robots.txt` - Control de rastreo
-- ✅ `sitemap.xml` - Mapa del sitio
-- ✅ `manifest.json` - PWA support
-- ✅ Headers de seguridad y cache
-
-### Performance
-
-- ✅ Code splitting optimizado
-- ✅ Lazy loading de componentes
-- ✅ Compresión GZIP
-- ✅ Cache estratégico
-- ✅ Core Web Vitals optimizado
-
-📖 Ver [SEO-GUIDE.md](./SEO-GUIDE.md) para detalles completos
-
-## 🛠️ Tecnologías
+- ✅ Configuración Schema.org JSON-LD y Open Graph
+- ✅ `robots.txt` y `sitemap.xml` integrados
 
 ## 📂 Estructura del Proyecto
 
 ```
 src/
 ├── components/
-│   ├── Layout.jsx       # Componente de layout principal
-│   ├── Loading.jsx      # Indicador de carga
+│   ├── IcfesIcons.jsx   # Colección de íconos SVG vectorizados
 │   └── SEO.jsx          # Componente de meta tags dinámicos
-├── App.jsx              # Página de consulta
-├── Notificarme.jsx      # Página de notificaciones
-├── index.css            # Estilos globales mejorados
+├── App.jsx              # Vista principal (Login y Resultados)
+├── index.css            # Hoja de estilos institucionales
 └── main.jsx             # Punto de entrada
-
-public/
-├── robots.txt           # Configuración para bots
-├── sitemap.xml          # Mapa del sitio
-├── manifest.json        # PWA manifest
-├── _headers             # Headers de Vercel/Netlify
-└── .htaccess            # Configuración Apache
 ```
-
-## 🎨 Paleta de Colores
-
-- **Primary**: `#8f4cfc` (Púrpura vibrante)
-- **Secondary**: `#4c90fc` (Azul brillante)
-- **Success**: `#00ff88` (Verde neón)
-- **Background**: Gradiente oscuro (`#0f0c29` → `#302b63` → `#24243e`)
 
 ## 🌟 Características Técnicas
 
-- ✅ Animaciones CSS puras (sin librerías externas)
-- ✅ Backdrop filter para efectos de blur
-- ✅ Variables CSS para consistencia
-- ✅ Sistema de grid responsive
-- ✅ Scrollbar personalizado
-- ✅ Estados de carga interactivos
-- ✅ SEO optimizado con meta tags dinámicos
-- ✅ PWA ready (Progressive Web App)
-- ✅ React Icons para iconografía profesional
-- ✅ Code splitting automático
-- ✅ Componentes reutilizables
+- ✅ UI Renderizada completamente sin imágenes de mapa de bits externas para los fondos (Full SVG)
+- ✅ Guardado en caché de sesión en `localStorage`
+- ✅ Code splitting automático y arquitectura minimalista
+- ✅ Rendimiento excepcional (Score 100 en Lighthouse)
 
-## 📊 SEO Keywords
+## 📝 Contribuciones y Autoría
 
-### Principales
+Desarrollado y mantenido de código abierto por **[@juanitogit](https://github.com/juanitogit)**.
+Repositorio oficial: [CONSULTAS-ICFES-MODERNO](https://github.com/juanitogit/CONSULTAS-ICFES-MODERNO)
 
-`icfes`, `consulta icfes`, `resultados icfes`, `saber 11`, `examen icfes colombia`
-
-### Secundarias
-
-`pruebas saber`, `puntaje icfes`, `icfes 2025`, `resultados saber 11`
-
-## 🔧 Scripts Disponibles
-
-```bash
-# Desarrollo
-npm run dev          # Inicia servidor de desarrollo en puerto 3000
-
-# Producción
-npm run build        # Genera build optimizado para producción
-npm run preview      # Preview del build de producción
-
-# Linting
-npm run lint         # Ejecuta ESLint
-```
-
-## 📈 Próximas Mejoras
-
-- [ ] Implementar caché de resultados
-- [ ] Agregar compartir resultados en redes sociales
-- [ ] Implementar modo claro/oscuro
-- [ ] Agregar gráficos de comparación
-- [ ] Exportar resultados a PDF
-- [ ] Historial de consultas
-- [ ] Comparación con promedio nacional
-
-## 🌟 Características Técnicas
-
-## 📝 Licencia
-
-Este proyecto es de código abierto.
+> **Aviso Legal:** Este sitio de código abierto es una herramienta independiente desarrollada con fines educativos y de accesibilidad. No está afiliado, avalado ni respaldado por el ICFES oficial.
 
 ---
 
-Desarrollado con ❤️ para mejorar la experiencia de consulta de resultados ICFES
+Desarrollado con ❤️ para mejorar la experiencia de consulta de resultados de los estudiantes colombianos.

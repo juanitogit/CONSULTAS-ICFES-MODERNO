@@ -340,7 +340,7 @@ function App() {
           <div className="footer-col">
             <h4><HiOutlineCode className="footer-icon-md"/> Código Abierto</h4>
             <p>Este proyecto es de código abierto. Contribuye o revisa el código en GitHub.</p>
-            <a href="https://github.com/NeuDam/ICFES-WEB-CONSULTA" target="_blank" rel="noreferrer" className="github-btn">
+            <a href="https://github.com/juanitogit/CONSULTAS-ICFES-MODERNO" target="_blank" rel="noreferrer" className="github-btn">
               Ver en GitHub
             </a>
           </div>

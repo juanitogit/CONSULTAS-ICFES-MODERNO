@@ -92,7 +92,11 @@ function App() {
     const [year, month, day] = born.split("-");
     const fechaTransformada = `${day}/${month}/${year}`;
     
-    axios.post("https://icfes-server.vercel.app/consulta", {
+    const apiUrl = import.meta.env.DEV
+      ? "https://icfes-server.vercel.app/consulta"
+      : "/api/consulta";
+    
+    axios.post(apiUrl, {
       document: numDocument,
       young: young,
       born: fechaTransformada

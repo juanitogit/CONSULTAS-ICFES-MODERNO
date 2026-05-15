@@ -1,24 +1,10 @@
-import { Link, useLocation } from "react-router-dom"
-import AnimatedBackground from "./AnimatedBackground"
+import { useLocation } from "react-router-dom"
 
 /* eslint-disable react/prop-types */
 function Layout({ children }) {
-
   const currentPath = useLocation().pathname
-
-  console.log(currentPath)
-
   return (
     <main>
-      <AnimatedBackground />
-      <div className="container-buttons">
-        <Link to={'/notificame'}>
-          <button className={`button ${currentPath !== "/" ? "selectedButon" : ""}`}>Notificame</button>
-        </Link>
-        <Link to={'/'}>
-          <button className={`button ${currentPath === "/" ? "selectedButon" : ""}`}>Consulta</button>
-        </Link>
-      </div>
       <section className="main-section-layout">
         {children}
       </section>

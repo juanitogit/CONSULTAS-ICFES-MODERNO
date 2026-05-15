@@ -66,7 +66,7 @@ function App() {
   const [numDocument, setNumDocument] = useState("")
   const [born, setBorn] = useState("")
   const [mainData, setMainData] = useState(null)
-  const [young, setYoung] = useState("TI")
+  const [young, setYoung] = useState(true)
   const [loading, setLoading] = useState(false)
   const [toast, setToast] = useState(null)
   
@@ -89,26 +89,49 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault()
     setLoading(true)
-    const isTi = young === "TI";
     const [year, month, day] = born.split("-");
     const fechaTransformada = `${day}/${month}/${year}`;
     
     axios.post("https://icfes-server.vercel.app/consulta", {
       document: numDocument,
-      young: isTi,
+      young: young,
       born: fechaTransformada
     }).then((response) => {
       if (response.data.status === false) {
-        showToast("error", "No se encontraron resultados para este documento.")
+        showToast("error", "No se encontraron resultados para este documento. Verifica los datos ingresados.")
         setLoading(false)
         return
       }
       setMainData(response.data)
       localStorage.setItem("icfesCachedResult", JSON.stringify({ data: response.data, doc: numDocument }));
       setLoading(false)
+      showToast("success", "¡Resultados cargados exitosamente!")
     }).catch((error) => {
       setLoading(false)
-      showToast("error", "Error al consultar los resultados.")
+
+      // Manejo específico de errores
+      if (error.response && error.response.status) {
+        const status = error.response.status
+
+        if (status === 403) {
+          showToast("error", "Acceso no autorizado. El servidor bloqueó la petición. Intenta de nuevo en unos minutos.")
+        } else if (status === 429) {
+          showToast(
+            "warning",
+            "⏱️ Límite de consultas alcanzado. Solo puedes hacer 3 consultas cada 30 segundos. Por favor, espera un momento."
+          )
+        } else if (status === 404) {
+          showToast("error", "No se encontraron resultados para los datos proporcionados.")
+        } else if (status === 500) {
+          showToast("error", "Error en el servidor del ICFES. Por favor, intenta más tarde.")
+        } else {
+          showToast("error", `Error al consultar los resultados (código ${status}). Por favor, intenta nuevamente.`)
+        }
+      } else if (error.request) {
+        showToast("error", "No se pudo conectar con el servidor. Verifica tu conexión a internet.")
+      } else {
+        showToast("error", "Ocurrió un error inesperado. Por favor, intenta nuevamente.")
+      }
     })
   }
 
@@ -288,7 +311,7 @@ function App() {
           <form onSubmit={handleSubmit} className="icfes-form">
             <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
               <label>Tipo de documento <span>*</span></label>
-              <select value={young} onChange={(e) => setYoung(e.target.value)} required>
+              <select value={young ? "TI" : "CC"} onChange={(e) => setYoung(e.target.value === "TI")} required>
                 <option value="TI">Tarjeta de Identidad (TI)</option>
                 <option value="CC">Cédula de Ciudadanía (CC)</option>
                 <option value="CE">Cédula de Extranjería (CE)</option>

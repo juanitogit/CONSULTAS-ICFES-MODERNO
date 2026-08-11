@@ -122,7 +122,7 @@ function App() {
     }
     
     // Check GitHub last commit
-    axios.get('https://api.github.com/repos/NeuDam/ICFES-WEB-CONSULTA/commits?per_page=1')
+    axios.get('https://api.github.com/repos/juanitogit/CONSULTAS-ICFES-MODERNO/commits?per_page=1')
       .then(res => {
         if (res.data && res.data.length > 0) {
           const date = new Date(res.data[0].commit.author.date);

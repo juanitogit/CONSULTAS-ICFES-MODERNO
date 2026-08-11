@@ -140,26 +140,14 @@ function App() {
       .then(res => setApiStatus(res.data.status ? "Funcionando" : "Caído"))
       .catch(() => setApiStatus("Caído"));
       
-    // Auto-hide status alert after 10 seconds
+    // Auto-hide status alert after 5 seconds
     const alertTimer = setTimeout(() => {
       setShowStatusAlert(false);
-    }, 10000);
+    }, 5000);
     return () => clearTimeout(alertTimer);
   }, []);
 
   const [showStatusAlert, setShowStatusAlert] = useState(true);
-
-  const [liveUsers, setLiveUsers] = useState(Math.floor(Math.random() * 15) + 24);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLiveUsers(prev => {
-        const change = Math.floor(Math.random() * 5) - 2; // -2 to +2
-        const next = prev + change;
-        return next < 12 ? 12 : (next > 45 ? 45 : next);
-      });
-    }, 7000);
-    return () => clearInterval(interval);
-  }, []);
 
   const showToast = (type, message) => {
     setToast({ type, message })
@@ -462,14 +450,14 @@ function App() {
       {/* Floating Status Alert */}
       <div style={{
         position: 'fixed',
-        bottom: showStatusAlert ? '20px' : '-100px',
-        left: '20px',
+        top: showStatusAlert ? '20px' : '-150px',
+        right: '20px',
         background: apiStatus === 'Funcionando' ? '#e8f5e9' : (apiStatus === 'loading' ? '#f5f5f5' : '#ffebee'),
         border: `1px solid ${apiStatus === 'Funcionando' ? '#c8e6c9' : (apiStatus === 'loading' ? '#e0e0e0' : '#ffcdd2')}`,
         padding: '12px 16px',
         borderRadius: '8px',
         boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        transition: 'bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transition: 'top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
         zIndex: 1000,
         fontSize: '0.9rem',
         color: '#333'
@@ -490,20 +478,6 @@ function App() {
       <SEO title="Bienvenido | ICFES" description="Consultar ICFES Saber 11." url="https://icfes-consultas.vercel.app/" />
       
       <div className="login-container" style={{ position: 'relative' }}>
-        <div style={{ position: 'absolute', top: '15px', right: '20px', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: '20px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', zIndex: 10, fontSize: '0.85rem', color: '#555', fontWeight: '500' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4caf50', animation: 'pulse 2s infinite' }}></div>
-          <span>{liveUsers} personas usando la página ahora mismo</span>
-          <style>
-            {`
-              @keyframes pulse {
-                0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
-                70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(76, 175, 80, 0); }
-                100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
-              }
-            `}
-          </style>
-        </div>
-
         <div className="login-left">
           <div style={{ marginBottom: '20px' }}>
             {/* Solo dejamos el texto Bienvenido en la izquierda */}

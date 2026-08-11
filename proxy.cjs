@@ -17,6 +17,18 @@ function getMateriaCode(nombreIcfes) {
   return 'LEC'; // fallback
 }
 
+// Health check endpoint para no agotar cuotas completas
+app.get('/consulta', async (req, res) => {
+  try {
+    const authRes = await axios.post('https://resultadosbackend.icfes.gov.co/api/segurity/autenticacionResultados', {
+      tipoDocumento: 'TI', numeroDocumento: '111111111', fechaNacimiento: '01/01/2000', numeroRegistro: '', captcha: 'ping'
+    }, { timeout: 8000 });
+    res.json({ status: true, message: 'Funcionando' });
+  } catch (error) {
+    res.status(500).json({ status: false, message: 'Caído' });
+  }
+});
+
 app.post('/consulta', async (req, res) => {
   const { document, young, born } = req.body;
   const docType = young ? 'TI' : 'CC';

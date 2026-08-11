@@ -12,18 +12,30 @@ function getMateriaCode(nombreIcfes) {
 }
 
 export default async function handler(req, res) {
-  // Solo permitir POST
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
   // Enviar CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // Health check endpoint para no agotar cuotas completas
+  if (req.method === 'GET') {
+    try {
+      const authRes = await axios.post('https://resultadosbackend.icfes.gov.co/api/segurity/autenticacionResultados', {
+        tipoDocumento: 'TI', numeroDocumento: '111111111', fechaNacimiento: '01/01/2000', numeroRegistro: '', captcha: 'ping'
+      }, { timeout: 8000 });
+      return res.status(200).json({ status: true, message: 'Funcionando' });
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Caído' });
+    }
+  }
+
+  // Solo permitir POST para las consultas
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const { document, young, born } = req.body;

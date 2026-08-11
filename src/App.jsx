@@ -104,6 +104,9 @@ function App() {
   const [darkMode, setDarkMode] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(100)
   
+  const [apiStatus, setApiStatus] = useState("loading");
+  const [lastCommit, setLastCommit] = useState("");
+  
   const printRef = useRef();
 
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 10, 150));
@@ -117,6 +120,25 @@ function App() {
       setMainData(parsed.data);
       setNumDocument(parsed.doc);
     }
+    
+    // Check GitHub last commit
+    axios.get('https://api.github.com/repos/NeuDam/ICFES-WEB-CONSULTA/commits?per_page=1')
+      .then(res => {
+        if (res.data && res.data.length > 0) {
+          const date = new Date(res.data[0].commit.author.date);
+          setLastCommit(date.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' }));
+        }
+      })
+      .catch(() => setLastCommit("Desconocida"));
+
+    // Check API Status
+    const apiUrl = import.meta.env.DEV
+      ? "http://localhost:3001/consulta"
+      : "/api/consulta";
+
+    axios.get(apiUrl, { timeout: 10000 })
+      .then(res => setApiStatus(res.data.status ? "Funcionando" : "Caído"))
+      .catch(() => setApiStatus("Caído"));
   }, []);
 
   const showToast = (type, message) => {
@@ -421,6 +443,13 @@ function App() {
       <div className="login-container">
         <div className="login-left">
           <div style={{ marginBottom: '20px' }}>
+            <div style={{ padding: '12px', background: apiStatus === 'Funcionando' ? '#e8f5e9' : (apiStatus === 'loading' ? '#f5f5f5' : '#ffebee'), border: `1px solid ${apiStatus === 'Funcionando' ? '#c8e6c9' : (apiStatus === 'loading' ? '#e0e0e0' : '#ffcdd2')}`, borderRadius: '8px', marginBottom: '20px', fontSize: '0.9rem', color: '#333' }}>
+              <div><strong>Última actualización:</strong> {lastCommit || "Cargando..."}</div>
+              <div style={{ marginTop: '5px' }}>
+                <strong>Estado:</strong> {apiStatus === 'loading' ? "Comprobando..." : apiStatus} 
+                {apiStatus === 'Caído' && <span style={{ color: '#d32f2f' }}> (Estamos tratando de solucionarlo pronto)</span>}
+              </div>
+            </div>
             {/* Solo dejamos el texto Bienvenido en la izquierda */}
             <h1 style={{ fontSize: '2.2rem', color: '#333' }}>Bienvenido</h1>
           </div>

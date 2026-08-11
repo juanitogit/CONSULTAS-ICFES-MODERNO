@@ -1094,3 +1094,41 @@ body:has(.dark-mode) {
     width: 100%;
   }
 }
+
+/* Print styles - ocultar elementos innecesarios al imprimir/guardar como PDF */
+@media print {
+  .top-nav,
+  .floating-tools,
+  .btn-print,
+  .btn-calc,
+  .banner-saber,
+  .modal-overlay,
+  .toast {
+    display: none !important;
+  }
+  .results-wrapper {
+    background: white !important;
+  }
+  .report-container {
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    max-width: 100% !important;
+  }
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .dark-mode {
+    background: white !important;
+    color: #333 !important;
+  }
+  .dark-mode h3,
+  .dark-mode .global-title,
+  .dark-mode .score-num,
+  .dark-mode .prueba-name,
+  .dark-mode .prueba-score {
+    color: #333 !important;
+  }
+}

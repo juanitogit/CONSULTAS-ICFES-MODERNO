@@ -185,44 +185,7 @@ function App() {
   }
 
   const handleExportPDF = () => {
-    const element = printRef.current;
-    if (!element) return;
-
-    // Quitar zoom temporalmente
-    const originalTransform = element.style.transform;
-    element.style.transform = 'none';
-    
-    const opt = {
-      margin: 0.2,
-      filename: 'Resultados_Saber11.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(element).output('blob').then((blob) => {
-      // Truco para forzar el nombre en Chrome: Convertir el Blob anónimo en un objeto File real
-      const file = new File([blob], 'Resultados_Saber11.pdf', { type: 'application/pdf' });
-      const url = URL.createObjectURL(file);
-      
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'Resultados_Saber11.pdf';
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      // Limpieza
-      setTimeout(() => {
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        element.style.transform = originalTransform;
-      }, 100);
-      
-    }).catch((err) => {
-      console.error(err);
-      element.style.transform = originalTransform;
-    });
+    window.print();
   }
 
   const getSubjectIcon = (code) => {

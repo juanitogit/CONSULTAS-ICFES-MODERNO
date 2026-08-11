@@ -29,6 +29,10 @@ export default async function handler(req, res) {
       }, { timeout: 8000 });
       return res.status(200).json({ status: true, message: 'Funcionando' });
     } catch (error) {
+      // Si el servidor responde con 4xx (ej. 404 porque no existe el usuario), significa que ESTÁ VIVO.
+      if (error.response && error.response.status >= 400 && error.response.status < 500) {
+        return res.status(200).json({ status: true, message: 'Funcionando' });
+      }
       return res.status(500).json({ status: false, message: 'Caído' });
     }
   }

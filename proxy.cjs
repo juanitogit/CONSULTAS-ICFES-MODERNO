@@ -25,6 +25,9 @@ app.get('/consulta', async (req, res) => {
     }, { timeout: 8000 });
     res.json({ status: true, message: 'Funcionando' });
   } catch (error) {
+    if (error.response && error.response.status >= 400 && error.response.status < 500) {
+      return res.json({ status: true, message: 'Funcionando' });
+    }
     res.status(500).json({ status: false, message: 'Caído' });
   }
 });

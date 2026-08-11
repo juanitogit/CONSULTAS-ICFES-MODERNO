@@ -131,7 +131,7 @@ function App() {
     const fechaTransformada = `${day}/${month}/${year}`;
     
     const apiUrl = import.meta.env.DEV
-      ? "https://icfes-server.vercel.app/consulta"
+      ? "http://localhost:3001/consulta"
       : "/api/consulta";
     
     axios.post(apiUrl, {

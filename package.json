@@ -38,7 +38,9 @@
     "analyze": "vite build --mode analyze"
   },
   "dependencies": {
-    "axios": "^1.7.5",
+    "axios": "^1.19.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "html2pdf.js": "^0.14.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

@@ -1,6 +1,12 @@
-import axios from 'axios';
+const express = require('express');
+const cors = require('cors');
+const axios = require('axios');
 
-// Función auxiliar para mapear los nombres de ICFES a los códigos
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Función auxiliar para mapear los nombres de ICFES a los códigos que espera tu React App
 function getMateriaCode(nombreIcfes) {
   const n = nombreIcfes.toLowerCase();
   if (n.includes('lectura')) return 'LEC';
@@ -11,23 +17,11 @@ function getMateriaCode(nombreIcfes) {
   return 'LEC'; // fallback
 }
 
-export default async function handler(req, res) {
-  // Solo permitir POST
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  // Enviar CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
+app.post('/consulta', async (req, res) => {
   const { document, young, born } = req.body;
   const docType = young ? 'TI' : 'CC';
+
+  console.log(`[PROXY-AXIOS] Iniciando consulta súper rápida para: ${docType} ${document}`);
 
   try {
     // 1. Obtener Token (ICFES ignora el captcha en la API backend!)
@@ -94,12 +88,20 @@ export default async function handler(req, res) {
       ]
     };
 
-    return res.status(200).json(mappedData);
+    console.log('[PROXY-AXIOS] ¡Datos enviados a la interfaz exitosamente!');
+    res.json(mappedData);
 
   } catch (error) {
+    console.error('[PROXY-AXIOS] Error:', error.response?.status || error.message);
     if (error.response?.status === 404) {
       return res.json({ status: false, message: 'El ICFES indica que no se pudieron generar los resultados.' });
     }
-    return res.status(500).json({ status: false, message: 'Error interno conectando al ICFES.' });
+    res.status(500).json({ status: false, message: 'Error interno conectando al ICFES.' });
   }
-}
+});
+
+const PORT = 3001;
+app.listen(PORT, () => {
+  console.log(`🚀 Proxy 100% AUTOMÁTICO escuchando en http://localhost:${PORT}`);
+  console.log(`👉 Ya no necesitas el CAPTCHA ni abrir Chrome.`);
+});

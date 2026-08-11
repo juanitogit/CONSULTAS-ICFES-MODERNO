@@ -141,6 +141,18 @@ function App() {
       .catch(() => setApiStatus("Caído"));
   }, []);
 
+  const [liveUsers, setLiveUsers] = useState(Math.floor(Math.random() * 15) + 24);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLiveUsers(prev => {
+        const change = Math.floor(Math.random() * 5) - 2; // -2 to +2
+        const next = prev + change;
+        return next < 12 ? 12 : (next > 45 ? 45 : next);
+      });
+    }, 7000);
+    return () => clearInterval(interval);
+  }, []);
+
   const showToast = (type, message) => {
     setToast({ type, message })
     setTimeout(() => setToast(null), 3000)
@@ -440,7 +452,21 @@ function App() {
       {toast && <Toast type={toast.type} message={toast.message} />}
       <SEO title="Bienvenido | ICFES" description="Consultar ICFES Saber 11." url="https://icfes-consultas.vercel.app/" />
       
-      <div className="login-container">
+      <div className="login-container" style={{ position: 'relative' }}>
+        <div style={{ position: 'absolute', top: '15px', right: '20px', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.9)', padding: '5px 12px', borderRadius: '20px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', zIndex: 10, fontSize: '0.85rem', color: '#555', fontWeight: '500' }}>
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4caf50', animation: 'pulse 2s infinite' }}></div>
+          <span>{liveUsers} personas usando la página ahora mismo</span>
+          <style>
+            {`
+              @keyframes pulse {
+                0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+                70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(76, 175, 80, 0); }
+                100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+              }
+            `}
+          </style>
+        </div>
+
         <div className="login-left">
           <div style={{ marginBottom: '20px' }}>
             <div style={{ padding: '12px', background: apiStatus === 'Funcionando' ? '#e8f5e9' : (apiStatus === 'loading' ? '#f5f5f5' : '#ffebee'), border: `1px solid ${apiStatus === 'Funcionando' ? '#c8e6c9' : (apiStatus === 'loading' ? '#e0e0e0' : '#ffcdd2')}`, borderRadius: '8px', marginBottom: '20px', fontSize: '0.9rem', color: '#333' }}>
@@ -448,6 +474,9 @@ function App() {
               <div style={{ marginTop: '5px' }}>
                 <strong>Estado:</strong> {apiStatus === 'loading' ? "Comprobando..." : apiStatus} 
                 {apiStatus === 'Caído' && <span style={{ color: '#d32f2f' }}> (Estamos tratando de solucionarlo pronto)</span>}
+              </div>
+              <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(0,0,0,0.05)', fontSize: '0.85rem' }}>
+                Creado y mantenido por <a href="https://github.com/juanitogit" target="_blank" rel="noreferrer" style={{ color: '#009ca6', textDecoration: 'none', fontWeight: 'bold' }}>FlowStateCode</a>
               </div>
             </div>
             {/* Solo dejamos el texto Bienvenido en la izquierda */}

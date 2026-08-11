@@ -139,7 +139,15 @@ function App() {
     axios.get(apiUrl, { timeout: 10000 })
       .then(res => setApiStatus(res.data.status ? "Funcionando" : "Caído"))
       .catch(() => setApiStatus("Caído"));
+      
+    // Auto-hide status alert after 10 seconds
+    const alertTimer = setTimeout(() => {
+      setShowStatusAlert(false);
+    }, 10000);
+    return () => clearTimeout(alertTimer);
   }, []);
+
+  const [showStatusAlert, setShowStatusAlert] = useState(true);
 
   const [liveUsers, setLiveUsers] = useState(Math.floor(Math.random() * 15) + 24);
   useEffect(() => {
@@ -450,6 +458,35 @@ function App() {
   return (
     <>
       {toast && <Toast type={toast.type} message={toast.message} />}
+      
+      {/* Floating Status Alert */}
+      <div style={{
+        position: 'fixed',
+        bottom: showStatusAlert ? '20px' : '-100px',
+        left: '20px',
+        background: apiStatus === 'Funcionando' ? '#e8f5e9' : (apiStatus === 'loading' ? '#f5f5f5' : '#ffebee'),
+        border: `1px solid ${apiStatus === 'Funcionando' ? '#c8e6c9' : (apiStatus === 'loading' ? '#e0e0e0' : '#ffcdd2')}`,
+        padding: '12px 16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        transition: 'bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        zIndex: 1000,
+        fontSize: '0.9rem',
+        color: '#333'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div><strong>Última actualización:</strong> {lastCommit || "Cargando..."}</div>
+          <button onClick={() => setShowStatusAlert(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', padding: '0 0 0 10px', color: '#999' }}>×</button>
+        </div>
+        <div style={{ marginTop: '5px' }}>
+          <strong>Estado:</strong> {apiStatus === 'loading' ? "Comprobando..." : apiStatus} 
+          {apiStatus === 'Caído' && <span style={{ color: '#d32f2f' }}> (Estamos tratando de solucionarlo pronto)</span>}
+        </div>
+        <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(0,0,0,0.05)', fontSize: '0.85rem' }}>
+          Creado y mantenido por <a href="https://github.com/juanitogit" target="_blank" rel="noreferrer" style={{ color: '#009ca6', textDecoration: 'none', fontWeight: 'bold' }}>FlowStateCode</a>
+        </div>
+      </div>
+
       <SEO title="Bienvenido | ICFES" description="Consultar ICFES Saber 11." url="https://icfes-consultas.vercel.app/" />
       
       <div className="login-container" style={{ position: 'relative' }}>
@@ -469,16 +506,6 @@ function App() {
 
         <div className="login-left">
           <div style={{ marginBottom: '20px' }}>
-            <div style={{ padding: '12px', background: apiStatus === 'Funcionando' ? '#e8f5e9' : (apiStatus === 'loading' ? '#f5f5f5' : '#ffebee'), border: `1px solid ${apiStatus === 'Funcionando' ? '#c8e6c9' : (apiStatus === 'loading' ? '#e0e0e0' : '#ffcdd2')}`, borderRadius: '8px', marginBottom: '20px', fontSize: '0.9rem', color: '#333' }}>
-              <div><strong>Última actualización:</strong> {lastCommit || "Cargando..."}</div>
-              <div style={{ marginTop: '5px' }}>
-                <strong>Estado:</strong> {apiStatus === 'loading' ? "Comprobando..." : apiStatus} 
-                {apiStatus === 'Caído' && <span style={{ color: '#d32f2f' }}> (Estamos tratando de solucionarlo pronto)</span>}
-              </div>
-              <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(0,0,0,0.05)', fontSize: '0.85rem' }}>
-                Creado y mantenido por <a href="https://github.com/juanitogit" target="_blank" rel="noreferrer" style={{ color: '#009ca6', textDecoration: 'none', fontWeight: 'bold' }}>FlowStateCode</a>
-              </div>
-            </div>
             {/* Solo dejamos el texto Bienvenido en la izquierda */}
             <h1 style={{ fontSize: '2.2rem', color: '#333' }}>Bienvenido</h1>
           </div>
